@@ -1,0 +1,23 @@
+{
+  "name": "shibubu-sdk",
+  "version": "0.1.0",
+  "description": "SDK and examples for connecting to the Shibubu MCP server",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shibu003/shibubu-sdk"
+  },
+  "homepage": "https://shibubu.ai",
+  "scripts": {
+    "example:connect": "npx tsx examples/connect.ts",
+    "example:signals": "npx tsx examples/record-signals.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
