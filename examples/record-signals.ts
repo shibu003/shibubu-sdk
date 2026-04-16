@@ -1,5 +1,5 @@
 /**
- * Example: Record psychological signals to shape your pet's personality.
+ * Example: Record psychological signals to shape your buddy's personality.
  *
  * This is what an AI agent does during conversations —
  * it observes user behavior patterns and sends structured signals.
@@ -18,8 +18,8 @@ async function main() {
   const client = new Client({ name: "signal-example", version: "1.0.0" });
   await client.connect(transport);
 
-  // Ensure pet exists first
-  await client.callTool({ name: "pet.ensure_pet", arguments: {} });
+  // Ensure buddy exists first
+  await client.callTool({ name: "buddy_ensure", arguments: {} });
 
   // Record signals — these accumulate and are processed daily
   // Parameters (a-i) map to psychological traits:
@@ -27,7 +27,7 @@ async function main() {
   //   d: Agreeableness  e: Neuroticism        f: Curiosity
   //   g: Resilience     h: Empathy            i: Creativity
   const result = await client.callTool({
-    name: "pet.record_signal",
+    name: "buddy_signal",
     arguments: {
       signals: [
         {
@@ -50,7 +50,7 @@ async function main() {
 
   // Check current parameters
   const params = await client.callTool({
-    name: "pet.get_params",
+    name: "buddy_observe",
     arguments: {},
   });
   console.log("\nCurrent parameters:", params);

@@ -1,6 +1,6 @@
 {
   "name": "shibubu-sdk",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "SDK and examples for connecting to the Shibubu MCP server",
   "type": "module",
   "license": "MIT",

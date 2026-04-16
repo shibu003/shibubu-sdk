@@ -31,18 +31,18 @@ async function main() {
     console.log(`  - ${tool.name}: ${tool.description}`);
   }
 
-  // Ensure pet exists (creates one if it doesn't)
-  console.log("\nEnsuring pet exists...");
+  // Ensure buddy exists (creates one if it doesn't)
+  console.log("\nEnsuring buddy exists...");
   const ensureResult = await client.callTool({
-    name: "pet.ensure_pet",
+    name: "buddy_ensure",
     arguments: {},
   });
   console.log(ensureResult);
 
-  // Show the pet
-  console.log("\nShowing pet...");
+  // Show the buddy
+  console.log("\nShowing buddy...");
   const showResult = await client.callTool({
-    name: "pet.show",
+    name: "buddy_status",
     arguments: {},
   });
   console.log(showResult);
@@ -50,7 +50,7 @@ async function main() {
   // Get psychological parameters
   console.log("\nGetting parameters...");
   const paramsResult = await client.callTool({
-    name: "pet.get_params",
+    name: "buddy_observe",
     arguments: {},
   });
   console.log(paramsResult);
