@@ -202,3 +202,5 @@ If you have code calling tools by the old `pet.*` names, update them to the new 
 MIT — use this SDK freely to connect to Shibubu.
 
 The Shibubu server itself is proprietary. This SDK only provides connection examples and documentation.
+
+Contributions need a sign-off: see [CLA.md](CLA.md).
