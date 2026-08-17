@@ -10,6 +10,67 @@ Shibubu is a virtual buddy (like Tamagotchi meets Digimon) that lives on your AI
 - **4-stage evolution**: Egg → Baby → Child → Adult
 - **No conversation data is stored** — only structured signals (see [Privacy Policy](https://shibubu.ai/legal/privacy))
 
+## Install
+
+```bash
+npm install @shibubu/sdk
+```
+
+Node 18+, or any runtime with a global `fetch` — Deno, Bun, Workers and
+browsers all work. Zero dependencies.
+
+## Typed client
+
+```typescript
+import { BuddyClient, PARAM_LABELS } from "@shibubu/sdk";
+
+const shibubu = new BuddyClient({ token: process.env.SHIBUBU_TOKEN });
+const ref = { tenantId: "my_tenant", petId: "my_pet" };
+
+const buddy = await shibubu.getState(ref);
+console.log(`${buddy.stage}, xp ${buddy.xp}`);
+
+// The nine axes come back keyed a–i; PARAM_LABELS names them for people.
+for (const [key, value] of Object.entries(buddy.params)) {
+  console.log(`${PARAM_LABELS[key as keyof typeof PARAM_LABELS]}: ${value}`);
+}
+
+// Pass the version you read, so a concurrent change is rejected rather
+// than silently overwritten.
+await shibubu.applyAction(ref, { type: "feed" }, buddy.version);
+
+// Signals are evidence, not instructions — the server decides what, if
+// anything, they do to the nine axes.
+await shibubu.recordSignals(ref, [{ type: "asked_followup", count: 2 }]);
+```
+
+### What the client handles for you
+
+| | |
+|---|---|
+| **Auth** | bearer token on every `/v1` call; `health()` skips it |
+| **Timeouts** | 10 s per attempt, configurable |
+| **Retry** | network failures, 429 and 5xx, with exponential backoff — never a 4xx the server refused on its merits |
+| **Idempotency** | writes carry an `Idempotency-Key`, and a retry reuses the same one, so a retried `feed` cannot feed twice |
+| **Errors** | every failure is a `ShibubuError` with `.code`, `.status`, `.attempts`, and `.isAuth` / `.isForbidden` / `.isRateLimited` / `.isRetryable` |
+
+```typescript
+import { ShibubuError } from "@shibubu/sdk";
+
+try {
+  await shibubu.getState(ref);
+} catch (err) {
+  if (err instanceof ShibubuError && err.isAuth) await refreshToken();
+  else throw err;
+}
+```
+
+### What is not in the SDK
+
+The nine-axis update rules, evolution scoring, memory ranking, production
+prompts and analytics live on the server and stay there. This package
+describes the boundary; it does not reimplement what is behind it.
+
 ## Quick Start
 
 ### 1. Connect via Claude Desktop
@@ -157,17 +218,23 @@ console.log(buddy);
 ## Example: REST API (curl)
 
 ```bash
-# Health check
+# Health check — the only endpoint that needs no token
 curl https://shibubu.ai/health
 
-# Get buddy state
-curl https://shibubu.ai/v1/pet/my_tenant/my_pet/state
+# Everything under /v1 needs a bearer token, and the token's tenant must
+# match the tenant in the path (a mismatch is 403 FORBIDDEN, not 404).
+curl https://shibubu.ai/v1/pet/$TENANT/$PET/state \
+  -H "Authorization: Bearer $SHIBUBU_TOKEN"
 
-# Feed the buddy
-curl -X POST https://shibubu.ai/v1/pet/my_tenant/my_pet/action \
+# Feed the buddy. `version` is the counter from /state — the write is
+# rejected if the buddy moved on since you read it.
+curl -X POST https://shibubu.ai/v1/pet/$TENANT/$PET/action \
+  -H "Authorization: Bearer $SHIBUBU_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"action": {"type": "feed"}, "version": 1}'
 ```
+
+Without a token these return `401 {"error":{"code":"AUTH_REQUIRED", ...}}`.
 
 ## Terms & Privacy
 
@@ -199,8 +266,11 @@ If you have code calling tools by the old `pet.*` names, update them to the new 
 
 ## License
 
-MIT — use this SDK freely to connect to Shibubu.
+MIT — see [LICENSE](LICENSE). Use it freely, including commercially.
 
-The Shibubu server itself is proprietary. This SDK only provides connection examples and documentation.
+The Shibubu server itself is proprietary. This package is the client half:
+types, transport and contract tests for the boundary.
+
+Contributions need a sign-off: see [CLA.md](CLA.md).
 
 Contributions need a sign-off: see [CLA.md](CLA.md).

@@ -1,23 +1,44 @@
 {
-  "name": "shibubu-sdk",
-  "version": "0.2.0",
-  "description": "SDK and examples for connecting to the Shibubu MCP server",
-  "type": "module",
+  "name": "@shibubu/sdk",
+  "version": "0.3.0",
+  "description": "Typed client for the Shibubu API \u2014 a virtual buddy that grows from how you interact with AI.",
   "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "tsc && node --test test/client.test.ts",
+    "check": "tsc --noEmit && npm test"
+  },
+  "keywords": [
+    "shibubu",
+    "mcp",
+    "ai",
+    "agent",
+    "sdk"
+  ],
+  "homepage": "https://shibubu.ai",
   "repository": {
     "type": "git",
-    "url": "https://github.com/shibu003/shibubu-sdk"
-  },
-  "homepage": "https://shibubu.ai",
-  "scripts": {
-    "example:connect": "npx tsx examples/connect.ts",
-    "example:signals": "npx tsx examples/record-signals.ts"
-  },
-  "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.29.0"
+    "url": "https://github.com/shibu003/shibubu-sdk.git"
   },
   "devDependencies": {
-    "tsx": "^4.19.2",
-    "typescript": "^5.7.2"
+    "@types/node": "^26.2.0",
+    "typescript": "^5.6.0"
   }
 }
